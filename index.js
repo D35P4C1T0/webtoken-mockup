@@ -1,14 +1,22 @@
+require("dotenv").config()
 const express = require("express")
 const helmet = require("helmet")
 const morgan = require("morgan")
 const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken")
 const app = express()
 const port = 3000
 
 // link live:
 // https://www.twitch.tv/videos/562180505
 
-// Minuto: 2:19:41
+/* routes:
+
+  /test
+  /users/
+  /users/<username>
+
+*/
 
 // middleware setup
 app.use(express.json())
@@ -24,7 +32,32 @@ const db = low(adapter)
 // Set some defaults (required if your JSON file is empty)
 db.defaults({ users: [] }).write()
 
-app.get("/", (req, res) => res.send("Hello World!"))
+app.get("/", (req, res) => res.send("It works!"))
+
+const validateToken = async (req, res) => {
+  const token = req.headers["x-access-token"]
+  if (!token) {
+    res.status(403).json({
+      error: "unauthorized"
+    })
+    return
+  }
+
+  jwt.verify(token, process.env.SECRET, (err, decoded) => {
+    if (err) {
+      res.status(403).json({
+        error: "unauthorized"
+      })
+      return
+    }
+  })
+}
+
+app.get("/test", (req, res) => {
+  validateToken(req, res)
+  res.send({ status: "ok" })
+})
+
 app.post("/users/:username", async (req, res) => {
   const password = req.body.password
   const username = req.params.username
@@ -35,7 +68,8 @@ app.post("/users/:username", async (req, res) => {
 
   const authenticated = await bcrypt.compare(password, user.hashedPassword)
 
-  res.send({ authenticated })
+  const token = jwt.sign({ username }, process.env.SECRET, { expiresIn: 86400 })
+  res.send({ authenticated, token })
 })
 
 app.post("/users", async (req, res) => {
