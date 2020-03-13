@@ -12,8 +12,8 @@ const port = 3000
 // middleware setup
 app.use(helmet())
 app.use(morgan("dev"))
-app.use(express.json())
 app.use(cors())
+app.use(express.json())
 
 const low = require("lowdb")
 const FileSync = require("lowdb/adapters/FileSync")
@@ -29,6 +29,7 @@ app.get("/", (req, res) => res.send("Hello World!"))
 const validateToken = async (req, res) => {
   const token = req.headers["x-access-token"]
   if (!token) {
+    console.log("Token is undefined")
     res.status(403).json({
       error: "unauthorized"
     })
@@ -37,6 +38,7 @@ const validateToken = async (req, res) => {
 
   jwt.verify(token, process.env.SECRET, (err, decoded) => {
     if (err) {
+      console.log("Error with the token", err)
       res.status(403).json({
         error: "unauthorized"
       })
@@ -45,9 +47,8 @@ const validateToken = async (req, res) => {
   })
 }
 
-app.get("/test", async (req, res) => {
+app.get("/login", async (req, res) => {
   validateToken(req, res)
-
   res.send({ status: "ok" })
 })
 
@@ -66,6 +67,7 @@ app.post("/users/:username", async (req, res) => {
     authenticated,
     token
   })
+  console.log("Token sent")
 })
 
 app.post("/users", async (req, res) => {
@@ -95,7 +97,9 @@ app.post("/users", async (req, res) => {
     .push(newUser)
     .write()
 
+  console.log("New user added:", newUser.username)
+
   res.send(newUser)
 })
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.listen(port, () => console.log(`This app is listening on port ${port}!`))
