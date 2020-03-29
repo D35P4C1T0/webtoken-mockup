@@ -108,3 +108,5 @@ dist
 
 # Local db
 db.json
+
+.now
