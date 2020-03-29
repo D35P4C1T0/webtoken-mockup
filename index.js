@@ -37,7 +37,7 @@ const validateToken = async (req, res) => {
     return
   }
 
-  jwt.verify(token, process.env.SECRET, (err, decoded) => {
+  jwt.verify(token, process.env.secret, (err, decoded) => {
     if (err) {
       console.log('Error with the token', err)
       res.status(403).json({
@@ -63,7 +63,7 @@ app.post('/users/:username', async (req, res) => {
     .value()
 
   const authenticated = await bcrypt.compare(password, user.hashedPassword)
-  const token = jwt.sign({ username }, process.env.SECRET, { expiresIn: 86400 })
+  const token = jwt.sign({ username }, process.env.secret, { expiresIn: 86400 })
   res.send({
     authenticated,
     token
