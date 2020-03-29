@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ./index.js",
-    "start" : "nodemon ./index.js --ignore db.json"
+    "start": "nodemon ./index.js --ignore db.json"
   },
   "repository": {
     "type": "git",
@@ -28,8 +28,8 @@
     "helmet": "^3.21.3",
     "jsonwebtoken": "^8.5.1",
     "lowdb": "^1.0.0",
-    "morgan": "^1.9.1",
-    "minimist" : "^1.2.2"
+    "minimist": "^1.2.5",
+    "morgan": "^1.9.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"
